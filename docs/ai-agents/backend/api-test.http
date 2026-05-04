@@ -1,0 +1,188 @@
+@baseUrl = http://localhost:8000
+
+###
+# ===== 前台 API =====
+
+### 取得所有產品類型
+GET {{baseUrl}}/api/products
+
+### 取得產品規格選項
+GET {{baseUrl}}/api/products/1/specs
+
+### 即時報價
+POST {{baseUrl}}/api/quote
+Content-Type: application/json
+
+{
+  "product_type_id": 1,
+  "spec_option_ids": [1, 3, 5],
+  "quantity": 100
+}
+
+### 上傳設計稿
+POST {{baseUrl}}/api/upload
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="design.pdf"
+Content-Type: application/pdf
+
+< ./design.pdf
+------Boundary--
+
+### 建立訂單
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "name": "測試用戶",
+  "product_type_id": 1,
+  "spec_option_ids": [1, 3, 5],
+  "quantity": 100,
+  "file_path": "orders/2026/05/abc123.pdf",
+  "file_analysis": {
+    "dpi": 300,
+    "color_mode": "CMYK",
+    "has_bleed": true,
+    "warnings": [],
+    "passed": true
+  }
+}
+
+### 查詢訂單狀態
+GET {{baseUrl}}/orders/PR20260504ABCDEF
+
+###
+# ===== 後台 Admin API =====
+
+@adminCookie = laravel_session=xxx
+
+### 後台訂單列表
+GET {{baseUrl}}/admin/orders
+Cookie: {{adminCookie}}
+
+### 後台訂單列表（篩選狀態）
+GET {{baseUrl}}/admin/orders?status=paid
+Cookie: {{adminCookie}}
+
+### 後台訂單列表（搜尋）
+GET {{baseUrl}}/admin/orders?search=PR20260504
+Cookie: {{adminCookie}}
+
+### 指派印刷廠
+POST {{baseUrl}}/admin/orders/1/assign
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "printer_id": 1
+}
+
+### 更新訂單狀態
+PATCH {{baseUrl}}/admin/orders/1/status
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "status": "printing"
+}
+
+### 下載訂單圖檔
+GET {{baseUrl}}/admin/orders/1/file
+Cookie: {{adminCookie}}
+
+### 新增印刷廠
+POST {{baseUrl}}/admin/printers
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "name": "台灣印刷廠",
+  "contact_name": "王先生",
+  "phone": "02-12345678",
+  "email": "printer@example.com",
+  "password": "password123",
+  "line_user_id": "U1234567890abcdef",
+  "working_days": 3
+}
+
+### 強制暫停印刷廠
+PATCH {{baseUrl}}/admin/printers/1/suspend
+Cookie: {{adminCookie}}
+
+### 新增規格維度
+POST {{baseUrl}}/admin/specs/dimensions
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "name": "紙張",
+  "sort_order": 2
+}
+
+### 新增規格選項
+POST {{baseUrl}}/admin/specs/options
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "spec_dimension_id": 1,
+  "label": "銅版紙",
+  "price_addon": 0,
+  "sort_order": 1
+}
+
+### 新增產品類型
+POST {{baseUrl}}/admin/specs/products
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "name": "名片",
+  "dimension_ids": [1, 2, 3, 4]
+}
+
+### 設定基本價
+POST {{baseUrl}}/admin/specs/prices
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "product_type_id": 1,
+  "spec_option_ids": [1, 3, 5],
+  "base_price": 500
+}
+
+### 設定數量折扣
+POST {{baseUrl}}/admin/specs/discounts
+Content-Type: application/json
+Cookie: {{adminCookie}}
+
+{
+  "min_quantity": 500,
+  "discount_rate": 0.9
+}
+
+###
+# ===== 印刷廠 API =====
+
+@printerCookie = laravel_session=yyy
+
+### 印刷廠訂單列表
+GET {{baseUrl}}/printer/orders
+Cookie: {{printerCookie}}
+
+### 更新接單狀態
+PATCH {{baseUrl}}/printer/status
+Content-Type: application/json
+Cookie: {{printerCookie}}
+
+{
+  "status": "suspended",
+  "working_days": 5
+}
+
+### 下載訂單圖檔（印刷廠）
+GET {{baseUrl}}/printer/orders/1/file
+Cookie: {{printerCookie}}
