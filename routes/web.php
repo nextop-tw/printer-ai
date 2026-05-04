@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Printer\PrinterAuthController;
 use App\Http\Controllers\Printer\PrinterOrderController;
 use App\Http\Middleware\AuthAdmin;
@@ -17,6 +18,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn () => view('welcome'))->name('home');
 Route::get('/order', fn () => view('order.create'))->name('order.create');
 Route::get('/orders/{orderNo}', [ApiOrderController::class, 'show'])->name('orders.show');
+
+// 用戶登入 / 訂單查詢
+Route::get('/login', fn () => view('client.auth.login'))->name('login');
+Route::post('/login', [\App\Http\Controllers\Auth\ClientLoginController::class, 'login'])->name('login.post');
+Route::get('/logout', function () {
+    auth()->logout();
+    return redirect()->route('home');
+})->name('logout');
+Route::get('/my-orders', [\App\Http\Controllers\Client\OrderHistoryController::class, 'index'])
+    ->middleware('auth')->name('orders.index');
+
+// Google OAuth
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
 
 // 前台 API
 Route::prefix('api')->name('api.')->group(function () {
