@@ -8,26 +8,40 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Client\ClientDashboardController;
+use App\Http\Controllers\Client\OrderHistoryController;
 use App\Http\Controllers\Printer\PrinterAuthController;
 use App\Http\Controllers\Printer\PrinterOrderController;
 use App\Http\Middleware\AuthAdmin;
 use App\Http\Middleware\AuthPrinter;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// 前台
-Route::get('/', fn () => view('welcome'))->name('home');
-Route::get('/order', fn () => view('order.create'))->name('order.create');
-Route::get('/orders/{orderNo}', [ApiOrderController::class, 'show'])->name('orders.show');
+// 前台公開頁面
+Route::get('/', fn () => view('frontend.home'))->name('home');
+Route::get('/features', fn () => view('frontend.features'))->name('features');
+Route::get('/pricing', fn () => view('frontend.pricing'))->name('pricing');
 
-// 用戶登入 / 訂單查詢
-Route::get('/login', fn () => view('client.auth.login'))->name('login');
+// 用戶登入
+Route::get('/login', fn () => view('frontend.auth.login'))->name('login')->middleware('guest');
 Route::post('/login', [\App\Http\Controllers\Auth\ClientLoginController::class, 'login'])->name('login.post');
-Route::get('/logout', function () {
-    auth()->logout();
+Route::post('/logout', function (\Illuminate\Http\Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
     return redirect()->route('home');
 })->name('logout');
-Route::get('/my-orders', [\App\Http\Controllers\Client\OrderHistoryController::class, 'index'])
-    ->middleware('auth')->name('orders.index');
+
+// 用戶後台（需登入）
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/upload', [ClientDashboardController::class, 'upload'])->name('upload');
+    Route::get('/detect', [ClientDashboardController::class, 'detect'])->name('detect');
+    Route::get('/profile', [ClientDashboardController::class, 'profile'])->name('profile');
+    Route::patch('/profile', [ClientDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/profile/password', [ClientDashboardController::class, 'updatePassword'])->name('profile.password');
+    Route::get('/orders', [OrderHistoryController::class, 'index'])->name('orders.index');
+});
 
 // Google OAuth
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
@@ -44,7 +58,7 @@ Route::prefix('api')->name('api.')->group(function () {
 
 // 藍新金流回調
 Route::post('payment/notify', [PaymentController::class, 'notify'])->name('payment.notify')
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+    ->withoutMiddleware('web');
 Route::get('payment/return', [PaymentController::class, 'return'])->name('payment.return');
 
 // 後台 Admin
@@ -92,4 +106,4 @@ Route::prefix('printer')->name('printer.')->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+// auth.php (Breeze) 已停用 — 使用自訂登入與 Google OAuth

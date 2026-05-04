@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理後台 — PrinterAI</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon" style="width:28px;height:28px;font-size:0.85rem"><i class="bi bi-printer-fill"></i></div>PrinterAI
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">主選單</div>
+      <a href="dashboard.html" class="sidebar-link active"><i class="bi bi-grid-1x2"></i> 總覽</a>
+      <a href="upload.html" class="sidebar-link"><i class="bi bi-cloud-upload"></i> 新增訂單</a>
+      <a href="orders.html" class="sidebar-link"><i class="bi bi-box-seam"></i> 我的訂單 <span class="badge">3</span></a>
+      <a href="detect.html" class="sidebar-link"><i class="bi bi-search"></i> 檔案分析</a>
+      <div class="sidebar-section">帳號設定</div>
+      <a href="profile.html" class="sidebar-link"><i class="bi bi-person"></i> 個人資料</a>
+      <a href="billing.html" class="sidebar-link"><i class="bi bi-credit-card"></i> 付款設定</a>
+      <a href="api.html" class="sidebar-link"><i class="bi bi-code-slash"></i> API 存取</a>
+      <div class="sidebar-section">協助</div>
+      <a href="#" class="sidebar-link"><i class="bi bi-question-circle"></i> 客服支援</a>
+      <a href="#" class="sidebar-link" data-logout><i class="bi bi-box-arrow-left"></i> 登出</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">N</div>
+      <div><div class="user-name">nextop</div><div class="user-role">管理員</div></div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="sidebar-toggle-btn" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <span class="topbar-greeting">您好，<strong>nextop</strong>——以下是您的印刷概覽</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="upload.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新增訂單</a>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-card-icon icon-orange"><i class="bi bi-box-seam"></i></div><span class="stat-card-delta delta-up">+12%</span></div>
+        <div class="stat-card-value">47</div><div class="stat-card-label">總訂單數</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-card-icon icon-blue"><i class="bi bi-arrow-clockwise"></i></div><span class="stat-card-delta delta-up">3 進行中</span></div>
+        <div class="stat-card-value">3</div><div class="stat-card-label">製作中</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-card-icon icon-green"><i class="bi bi-check-circle"></i></div><span class="stat-card-delta delta-up">本週 +5</span></div>
+        <div class="stat-card-value">41</div><div class="stat-card-label">已配送完成</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-card-icon icon-gold"><i class="bi bi-currency-dollar"></i></div><span class="stat-card-delta delta-up">+8%</span></div>
+        <div class="stat-card-value">NT$38,520</div><div class="stat-card-label">累計消費</div>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="dashboard-grid">
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-title">最近訂單</span>
+          <a href="orders.html" class="widget-link">查看全部 <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>訂單編號</th><th>品項</th><th>數量</th><th>狀態</th><th>金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="mono" style="font-size:0.78rem">#PAI-0047</span></td><td>名片</td><td>500</td><td><span class="order-badge badge-shipped">已出貨</span></td><td>NT$1,260</td></tr>
+            <tr><td><span class="mono" style="font-size:0.78rem">#PAI-0046</span></td><td>A4 海報</td><td>100</td><td><span class="order-badge badge-processing">印製中</span></td><td>NT$2,055</td></tr>
+            <tr><td><span class="mono" style="font-size:0.78rem">#PAI-0045</span></td><td>DM 傳單</td><td>1000</td><td><span class="order-badge badge-processing">印製中</span></td><td>NT$3,720</td></tr>
+            <tr><td><span class="mono" style="font-size:0.78rem">#PAI-0044</span></td><td>名片</td><td>250</td><td><span class="order-badge badge-ready">備妥待取</span></td><td>NT$720</td></tr>
+            <tr><td><span class="mono" style="font-size:0.78rem">#PAI-0043</span></td><td>A3 海報</td><td>50</td><td><span class="order-badge badge-shipped">已送達</span></td><td>NT$1,680</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="widget" style="margin-bottom:1.5rem">
+          <div class="widget-header"><span class="widget-title">快捷操作</span></div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem">
+            <a href="upload.html" class="btn btn-primary" style="justify-content:flex-start"><i class="bi bi-upload"></i> 上傳新設計稿</a>
+            <a href="detect.html" class="btn btn-outline" style="justify-content:flex-start"><i class="bi bi-search"></i> 分析檔案</a>
+            <a href="orders.html" class="btn btn-outline" style="justify-content:flex-start"><i class="bi bi-arrow-repeat"></i> 重複上次訂單</a>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-header"><span class="widget-title">近期動態</span></div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-dot"></div><div><div class="activity-text">訂單 #PAI-0047 已透過順豐速運出貨</div><div class="activity-time">2 小時前</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--gold)"></div><div><div class="activity-text">檔案 <strong>flyer_v3.png</strong> 通過印刷品質檢測</div><div class="activity-time">昨天 下午 4:12</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">訂單 #PAI-0046 進入印刷排程</div><div class="activity-time">昨天 上午 11:30</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:#1a8a2e"></div><div><div class="activity-text">#PAI-0046 付款確認——NT$2,055</div><div class="activity-time">2 天前</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--accent)"></div><div><div class="activity-text">自動將 <strong>poster.jpg</strong> 的 RGB 轉換為 CMYK</div><div class="activity-time">2 天前</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Stats -->
+    <div class="widget">
+      <div class="widget-header"><span class="widget-title">檔案分析紀錄</span><a href="detect.html" class="widget-link">分析新檔案</a></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem">
+        <div style="text-align:center;padding:1.5rem;background:var(--cream);border-radius:var(--radius-lg)">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent)">23</div>
+          <div style="font-size:0.82rem;color:var(--muted)">已分析檔案</div>
+        </div>
+        <div style="text-align:center;padding:1.5rem;background:var(--cream);border-radius:var(--radius-lg)">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#1a8a2e">17</div>
+          <div style="font-size:0.82rem;color:var(--muted)">可直接印刷</div>
+        </div>
+        <div style="text-align:center;padding:1.5rem;background:var(--cream);border-radius:var(--radius-lg)">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#8a6a00">4</div>
+          <div style="font-size:0.82rem;color:var(--muted)">自動修正完成</div>
+        </div>
+        <div style="text-align:center;padding:1.5rem;background:var(--cream);border-radius:var(--radius-lg)">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent)">2</div>
+          <div style="font-size:0.82rem;color:var(--muted)">需人工審核</div>
+        </div>
+        <div style="text-align:center;padding:1.5rem;background:var(--cream);border-radius:var(--radius-lg)">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--ink)">74%</div>
+          <div style="font-size:0.82rem;color:var(--muted)">可印刷率</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast-container"></div>
+<script src="script.js"></script>
+</body>
+</html>

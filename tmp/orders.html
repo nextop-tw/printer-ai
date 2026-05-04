@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的訂單 — PrinterAI</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-icon" style="width:28px;height:28px;font-size:0.85rem"><i class="bi bi-printer-fill"></i></div>PrinterAI</div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">主選單</div>
+      <a href="dashboard.html" class="sidebar-link"><i class="bi bi-grid-1x2"></i> 總覽</a>
+      <a href="upload.html" class="sidebar-link"><i class="bi bi-cloud-upload"></i> 新增訂單</a>
+      <a href="orders.html" class="sidebar-link active"><i class="bi bi-box-seam"></i> 我的訂單</a>
+      <a href="detect.html" class="sidebar-link"><i class="bi bi-search"></i> 檔案分析</a>
+      <div class="sidebar-section">帳號設定</div>
+      <a href="profile.html" class="sidebar-link"><i class="bi bi-person"></i> 個人資料</a>
+      <a href="#" class="sidebar-link" data-logout><i class="bi bi-box-arrow-left"></i> 登出</a>
+    </nav>
+    <div class="sidebar-user"><div class="user-avatar">N</div><div><div class="user-name">nextop</div><div class="user-role">管理員</div></div></div>
+  </aside>
+  <main class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="sidebar-toggle-btn" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <span class="topbar-greeting"><strong>我的訂單</strong></span>
+      </div>
+      <div class="topbar-actions"><a href="upload.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新增訂單</a></div>
+    </div>
+    <!-- Filters -->
+    <div class="widget" style="margin-bottom:1.5rem">
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div class="tab-bar" style="border-bottom:none;margin-bottom:0">
+          <button class="tab-btn active" data-status="all">全部訂單</button>
+          <button class="tab-btn" data-status="printing">印製中</button>
+          <button class="tab-btn" data-status="shipped">已出貨</button>
+          <button class="tab-btn" data-status="delivered">已送達</button>
+        </div>
+        <div style="margin-left:auto">
+          <input type="text" class="form-control" placeholder="搜尋訂單..." style="width:200px;padding:8px 12px;font-size:0.85rem" id="searchInput" />
+        </div>
+      </div>
+    </div>
+    <!-- Orders List -->
+    <div class="widget">
+      <table class="orders-table" style="width:100%">
+        <thead>
+          <tr>
+            <th>訂單編號</th><th>品項</th><th>檔案</th><th>數量</th><th>日期</th><th>狀態</th><th>金額</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+<div class="toast-container"></div>
+<script src="script.js"></script>
+<script>
+const ORDERS = [
+  { id:'PAI-0047', product:'名片', file:'logo_final.pdf', qty:500, date:'2025-05-28', status:'shipped', total:'NT$1,260' },
+  { id:'PAI-0046', product:'A4 海報', file:'event_poster.png', qty:100, date:'2025-05-27', status:'printing', total:'NT$2,055' },
+  { id:'PAI-0045', product:'DM 傳單', file:'promo_flyer_v2.jpg', qty:1000, date:'2025-05-26', status:'printing', total:'NT$3,720' },
+  { id:'PAI-0044', product:'名片', file:'bizcard_v3.pdf', qty:250, date:'2025-05-24', status:'ready', total:'NT$720' },
+  { id:'PAI-0043', product:'A3 海報', file:'product_a3.jpg', qty:50, date:'2025-05-22', status:'shipped', total:'NT$1,680' },
+  { id:'PAI-0042', product:'名片', file:'card_design.pdf', qty:500, date:'2025-05-19', status:'delivered', total:'NT$1,260' },
+  { id:'PAI-0041', product:'DM 傳單', file:'spring_sale.png', qty:500, date:'2025-05-14', status:'delivered', total:'NT$2,040' },
+  { id:'PAI-0040', product:'A4 海報', file:'brand_poster.pdf', qty:200, date:'2025-05-10', status:'delivered', total:'NT$2,940' },
+];
+const STATUS_LABEL = { printing:'印製中', shipped:'已出貨', ready:'備妥待取', delivered:'已送達', pending:'待確認' };
+const BADGE_MAP = { printing:'badge-processing', shipped:'badge-shipped', ready:'badge-ready', delivered:'badge-ready', pending:'badge-pending' };
+
+function renderOrders(list) {
+  const tbody = document.getElementById('ordersBody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem">找不到符合條件的訂單</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td><span class="mono" style="font-size:0.78rem">#${o.id}</span></td>
+      <td style="font-weight:600;font-size:0.88rem">${o.product}</td>
+      <td style="color:var(--muted);font-size:0.82rem"><i class="bi bi-file-earmark"></i> ${o.file}</td>
+      <td style="font-size:0.88rem">${o.qty} 張</td>
+      <td style="font-size:0.82rem;color:var(--muted)">${o.date}</td>
+      <td><span class="order-badge ${BADGE_MAP[o.status]}">${STATUS_LABEL[o.status]}</span></td>
+      <td style="font-weight:600;font-family:'JetBrains Mono',monospace;font-size:0.82rem">${o.total}</td>
+      <td><button class="btn btn-sm btn-outline" onclick="Toast.show('已重新下單！','success')" style="padding:5px 10px;font-size:0.75rem">重複下單</button></td>
+    </tr>`).join('');
+}
+document.querySelectorAll('.tab-btn[data-status]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn[data-status]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const status = btn.dataset.status;
+    const kw = document.getElementById('searchInput').value.toLowerCase();
+    let list = status === 'all' ? ORDERS : ORDERS.filter(o => o.status === status);
+    if (kw) list = list.filter(o => o.id.toLowerCase().includes(kw) || o.product.includes(kw) || o.file.includes(kw));
+    renderOrders(list);
+  });
+});
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  const kw = this.value.toLowerCase();
+  const status = document.querySelector('.tab-btn[data-status].active')?.dataset.status || 'all';
+  let list = status === 'all' ? ORDERS : ORDERS.filter(o => o.status === status);
+  if (kw) list = list.filter(o => o.id.toLowerCase().includes(kw) || o.product.includes(kw) || o.file.includes(kw));
+  renderOrders(list);
+});
+renderOrders(ORDERS);
+</script>
+</body>
+</html>

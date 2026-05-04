@@ -14,6 +14,6 @@ class OrderHistoryController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('client.orders.index', compact('orders'));
+        return view('frontend.orders.index', compact('orders'));
     }
 }
