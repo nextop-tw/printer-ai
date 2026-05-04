@@ -43,7 +43,7 @@ return new class extends Migration
             $table->foreignId('spec_dimension_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_required')->default(true);
             $table->unsignedInteger('sort_order')->default(0);
-            $table->unique(['product_type_id', 'spec_dimension_id']);
+            $table->unique(['product_type_id', 'spec_dimension_id'], 'pt_sd_unique');
         });
 
         // 主規格組合基本價
